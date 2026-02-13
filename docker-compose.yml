@@ -1,0 +1,12 @@
+networks:
+  apn_net:
+    driver: bridge
+
+services:
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    container_name: mqtt-broker
+    networks:
+      - apn_net
+    ports:
+      - "1883:1883"
