@@ -1,0 +1,17 @@
+# Environment
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Docker
+mosquitto/data/
+mosquitto/log/
+
+# Database
+postgres_data/
+
+# OS
+.DS_Store
+Thumbs.db
