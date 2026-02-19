@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TABLE devices (
+CREATE TABLE IF NOT EXISTS devices (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     device_code VARCHAR(100) UNIQUE NOT NULL,
     name VARCHAR(255),
@@ -9,14 +9,17 @@ CREATE TABLE devices (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE telemetry (
-    id BIGSERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS telemetry (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     device_id UUID NOT NULL,
-    temperature FLOAT,
-    humidity FLOAT,
-    latitude FLOAT,
-    longitude FLOAT,
-    created_at TIMESTAMP NOT NULL,
+
+    temperature DOUBLE PRECISION,
+    humidity DOUBLE PRECISION,
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+    speed DOUBLE PRECISION,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_device
         FOREIGN KEY(device_id)
@@ -24,5 +27,5 @@ CREATE TABLE telemetry (
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_telemetry_device_time
+CREATE INDEX IF NOT EXISTS idx_telemetry_device_time
 ON telemetry (device_id, created_at DESC);

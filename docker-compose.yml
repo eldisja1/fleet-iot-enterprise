@@ -28,6 +28,24 @@ services:
     networks:
       - fleet-network
 
+  consumer:  
+    build: ./backend/consumer
+    container_name: fleet-consumer
+    depends_on:
+      - postgres
+      - mqtt
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - MQTT_TOPIC=fleet/+/telemetry
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=fleetdb
+      - DB_USER=fleetuser
+      - DB_PASSWORD=fleetpass
+    networks:
+      - fleet-network
+    restart: unless-stopped
 
 networks:
   fleet-network:
