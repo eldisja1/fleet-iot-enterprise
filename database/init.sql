@@ -13,11 +13,11 @@ CREATE TABLE IF NOT EXISTS telemetry (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     device_id UUID NOT NULL,
 
-    temperature DOUBLE PRECISION,
-    humidity DOUBLE PRECISION,
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,
     speed DOUBLE PRECISION,
+    fuel_level DOUBLE PRECISION,
+    status VARCHAR(50),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS telemetry (
         REFERENCES devices(id)
         ON DELETE CASCADE
 );
+
 
 CREATE INDEX IF NOT EXISTS idx_telemetry_device_time
 ON telemetry (device_id, created_at DESC);

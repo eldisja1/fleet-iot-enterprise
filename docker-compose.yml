@@ -37,7 +37,7 @@ services:
     environment:
       - MQTT_BROKER=mqtt
       - MQTT_PORT=1883
-      - MQTT_TOPIC=fleet/+/telemetry
+      - MQTT_TOPIC=fleet
       - DB_HOST=postgres
       - DB_PORT=5432
       - DB_NAME=fleetdb
@@ -45,7 +45,21 @@ services:
       - DB_PASSWORD=fleetpass
     networks:
       - fleet-network
+    restart: always
+  
+  simulator:
+    build: ./simulator
+    container_name: fleet-simulator
+    depends_on:
+      - mqtt
+    environment:
+      - MQTT_BROKER=mqtt
+      - MQTT_PORT=1883
+      - MQTT_TOPIC=fleet
+    networks:
+      - fleet-network
     restart: unless-stopped
+
 
 networks:
   fleet-network:
