@@ -5,7 +5,7 @@ import uuid
 import paho.mqtt.client as mqtt
 from sqlalchemy.exc import SQLAlchemyError
 
-from .config import MQTT_BROKER, MQTT_PORT, MQTT_TOPIC
+from .config import MQTT_BROKER, MQTT_PORT, MQTT_SUBSCRIBE_TOPIC
 from .database import SessionLocal
 from .models import Telemetry, Device
 
@@ -24,10 +24,9 @@ def on_connect(client, userdata, flags, rc):
     if rc == 0:
         logging.info("Connected to MQTT Broker")
 
-        topic = f"{MQTT_TOPIC}/+/telemetry"
-        client.subscribe(topic)
+        client.subscribe(MQTT_SUBSCRIBE_TOPIC)
+        logging.info(f"Subscribed to topic: {MQTT_SUBSCRIBE_TOPIC}")
 
-        logging.info(f"Subscribed to topic: {topic}")
     else:
         logging.error(f"Failed to connect, return code {rc}")
 
@@ -58,11 +57,10 @@ def on_message(client, userdata, msg):
 
             device = Device(
                 id=device_uuid,
-                device_code=str(device_uuid),   # WAJIB
+                device_code=str(device_uuid),
                 name=f"Device-{str(device_uuid)[:8]}",
                 status="online"
             )
-
 
             session.add(device)
             session.commit()

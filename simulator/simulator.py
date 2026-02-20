@@ -7,11 +7,10 @@ from datetime import datetime
 import paho.mqtt.client as mqtt
 import os
 
-import os
 
 MQTT_BROKER = os.getenv("MQTT_BROKER", "mqtt")
 MQTT_PORT = int(os.getenv("MQTT_PORT", 1883))
-MQTT_BASE_TOPIC = os.getenv("MQTT_TOPIC", "fleet")
+MQTT_BASE_TOPIC = os.getenv("MQTT_BASE_TOPIC", "fleet")
 
 
 

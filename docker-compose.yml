@@ -4,7 +4,7 @@ services:
     image: eclipse-mosquitto:2
     container_name: fleet-mqtt
     ports:
-      - "${MQTT_PORT}:1883"
+      - "${MQTT_PORT}:${MQTT_PORT}"
       - "9001:9001"
     volumes:
       - ./mosquitto/config:/mosquitto/config
@@ -28,38 +28,51 @@ services:
     networks:
       - fleet-network
 
-  consumer:  
+  consumer:
     build: ./backend/consumer
     container_name: fleet-consumer
     depends_on:
       - postgres
       - mqtt
     environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-      - MQTT_TOPIC=fleet
-      - DB_HOST=postgres
-      - DB_PORT=5432
-      - DB_NAME=fleetdb
-      - DB_USER=fleetuser
-      - DB_PASSWORD=fleetpass
+      MQTT_BROKER: mqtt
+      MQTT_PORT: ${MQTT_PORT}
+      MQTT_SUBSCRIBE_TOPIC: ${MQTT_SUBSCRIBE_TOPIC}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     networks:
       - fleet-network
     restart: always
-  
+
   simulator:
     build: ./simulator
     container_name: fleet-simulator
     depends_on:
       - mqtt
     environment:
-      - MQTT_BROKER=mqtt
-      - MQTT_PORT=1883
-      - MQTT_TOPIC=fleet
+      MQTT_BROKER: mqtt
+      MQTT_PORT: ${MQTT_PORT}
+      MQTT_BASE_TOPIC: ${MQTT_BASE_TOPIC}
     networks:
       - fleet-network
     restart: unless-stopped
 
+  api:
+    build: ./backend/api
+    container_name: fleet-api
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      API_USERNAME: ${API_USERNAME}
+      API_PASSWORD: ${API_PASSWORD}
+    ports:
+      - "8000:8000"
+    networks:
+      - fleet-network
 
 networks:
   fleet-network:
